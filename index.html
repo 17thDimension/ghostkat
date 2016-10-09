@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<title>Ghost Kat</title>
-    <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+  <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -34,17 +34,18 @@ var fireButton;
 var frameTime = 0;
 var frames;
 var prevCamX = 0;
+var redRocks;
 
 function create () {
-
-    game.world.setBounds(0, 0, screen.width*10, screen.height);
+    var worldLength = screen.width * 5;
+    game.world.setBounds(0, 0, worldLength, screen.height);
 
     frames = Phaser.Animation.generateFrameNames('frame', 2, 30, '', 2);
     frames.unshift('frame02');
 
     stars = game.add.group();
 
-    for (var i = 0; i < 9001; i++)
+    for (var i = 0; i < 1700; i++)
     {
         stars.create(game.world.randomX, game.world.randomY, 'star');
     }
@@ -74,7 +75,23 @@ function create () {
     fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
     prevCamX = game.camera.x;
+    redRocks = new Phaser.Polygon();
 
+       //  And then populate it via setTo, using any combination of values as above
+       var points = [];
+       points.push(new Phaser.Point(0, screen.height));
+       var nextHeight= screen.height-100;
+       for (i = 0; i < worldLength/10; i++) {
+          points.push(new Phaser.Point(i*10,nextHeight));
+          nextHeight += Math.random()*10-5;
+       }
+       points.push(new Phaser.Point(worldLength, screen.height));
+       redRocks.setTo(points);
+       graphics = game.add.graphics(0, 0);
+
+       graphics.beginFill(0x9b0000);
+       graphics.drawPolygon(redRocks.points);
+       graphics.endFill();
 }
 
 function update () {
@@ -139,5 +156,4 @@ function fireLoveBeam(){
 </script>
 
 </body>
-<iframe style='display:none' width="0%" height="0" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/265571244&amp;auto_play=true&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true"></iframe>
 </html>
