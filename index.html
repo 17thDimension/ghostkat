@@ -19,7 +19,7 @@ function preload () {
 
     game.load.image('ghostkat', 'assets/img/ghostkatrough.png');
     game.load.image('star', 'assets/img/star.png');
-    game.load.image('sphere', 'assets/img/Sphere.png');
+    game.load.image('sphere', 'assets/img/sphere.png');
     game.load.image('heart', 'assets/img/heart.gif');
 
 }
@@ -53,7 +53,7 @@ function create () {
 
     for (var i = 0; i < 1; i++)
     {
-        spheres.create(game.world.randomX, game.world.randomY, 'sphere');
+        spheres.create(9000, 300, 'sphere');
     }
 
     lovebeams = game.add.group();
