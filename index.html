@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<title>Ghost Kat</title>
-  <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+  <script src="assets/js/phaser.min.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -39,10 +39,12 @@ var frameTime = 0;
 var frames;
 var prevCamX = 0;
 var redRocks;
-
+var worldLength;
+var worldHeight;
 function create () {
-    var worldLength = screen.width * 5;
-    game.world.setBounds(0, 0, worldLength, screen.height);
+	worldLength = screen.width * 7;
+	worldHeight = screen.height * 1;
+    game.world.setBounds(0, 0, worldLength, worldHeight);
 
     frames = Phaser.Animation.generateFrameNames('frame', 2, 30, '', 2);
     frames.unshift('frame02');
@@ -51,15 +53,18 @@ function create () {
 
     for (var i = 0; i < 1700; i++)
     {
-        stars.create(game.world.randomX, game.world.randomY, 'star');
+        stars.create(game.world.randomX, worldHeight-screen.height*Math.random(), 'star');
     }
 
     spheres = game.add.group();
+		spheres.enableBody = true;
+    spheres.physicsBodyType = Phaser.Physics.ARCADE;
 
     for (var i = 0; i < 1; i++)
     {
-        spheres.create(worldLength-420, 300, 'sphere');
+        spheres.create(worldLength-820, 300, 'sphere');
     }
+
 		tacos = game.add.group();
 		tacos.enableBody = true;
     tacos.physicsBodyType = Phaser.Physics.ARCADE;
@@ -77,10 +82,9 @@ function create () {
     lovebeams.setAll('outOfBoundsKill', true);
     lovebeams.setAll('checkWorldBounds', true);
 
-    ghostkat = game.add.sprite(100, 300, 'ghostkat');
-    ghostkat.anchor.x = 0.5;
+    ghostkat = game.add.sprite(200,worldHeight-300, 'ghostkat');
 		game.physics.enable(ghostkat, Phaser.Physics.ARCADE);
-
+		ghostkat.anchor.x=.5;
     game.camera.follow(ghostkat, Phaser.Camera.FOLLOW_LOCKON, 0.1);
 
     cursors = game.input.keyboard.createCursorKeys();
@@ -91,23 +95,31 @@ function create () {
 
        //  And then populate it via setTo, using any combination of values as above
        var points = [];
-       points.push(new Phaser.Point(0, screen.height));
-       var nextHeight= screen.height-200;
+       points.push(new Phaser.Point(0, worldHeight));
+       var nextHeight= worldHeight-200;
        for (i = 0; i < worldLength/10; i++) {
           points.push(new Phaser.Point(i*10,nextHeight));
           nextHeight += Math.random()*10-5;
        }
-       points.push(new Phaser.Point(worldLength, screen.height));
+       points.push(new Phaser.Point(worldLength, worldHeight));
        redRocks.setTo(points);
        graphics = game.add.graphics(0, 0);
 
        graphics.beginFill(0x9b0000);
        graphics.drawPolygon(redRocks.points);
        graphics.endFill();
+			 wind = {x:1,y:0}
 }
 function eatTaco (ghostkat, taco) {
 		taco.kill();
 		score += 420;
+}
+function pilotSphere(ghostkat,sphere){
+	wind = {x:0,y:-1};
+	ghostkat.loadTexture('sphere',0);
+	ghostkat.anchor.x=.5;
+	sphere.kill();
+
 }
 
 function update () {
@@ -122,7 +134,8 @@ function update () {
         ghostkat.x += 4;
         ghostkat.scale.x = 1;
     }else{
-      ghostkat.x += 1;
+			ghostkat.y += wind.y;
+			ghostkat.x += wind.x;
     }
 
     if (cursors.up.isDown)
@@ -141,7 +154,8 @@ function update () {
 
 
     prevCamX = game.camera.x;
-    game.physics.arcade.overlap(tacos, ghostkat, eatTaco, null, this);
+		game.physics.arcade.overlap(tacos, ghostkat, eatTaco, null, this);
+		game.physics.arcade.overlap(spheres, ghostkat, pilotSphere, null, this);
 }
 
 
@@ -164,6 +178,6 @@ function fireLoveBeam(){
 }
 
 </script>
-<iframe style='display:none' scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/265571244&amp;auto_play=true&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=false"></iframe>
-</body>
+<!--<iframe style='display:none' scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/265571244&amp;auto_play=true&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=false"></iframe>
+--></body>
 </html>
