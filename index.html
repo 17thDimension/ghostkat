@@ -18,14 +18,18 @@ var game = new Phaser.Game(screen.width, screen.height, Phaser.CANVAS, 'ghost-ka
 function preload () {
 
     game.load.image('ghostkat', 'assets/img/ghostkatrough.png');
-    game.load.image('star', 'assets/img/star.png');
     game.load.image('sphere', 'assets/img/sphere.png');
-    game.load.image('heart', 'assets/img/heart.gif');
+		game.load.image('heart', 'assets/img/heart.gif');
+		game.load.image('taco', 'assets/img/taco.png');
+		game.load.image('star', 'assets/img/star.png');
+//		game.load.shader('stars', 'assets/shaders/stars.frag');
 
 }
 
+var score;
 var stars;
 var spheres;
+var tacos;
 var lovebeams;
 var lovebeamTime=0;
 var ghostkat;
@@ -56,6 +60,13 @@ function create () {
     {
         spheres.create(worldLength-420, 300, 'sphere');
     }
+		tacos = game.add.group();
+		tacos.enableBody = true;
+    tacos.physicsBodyType = Phaser.Physics.ARCADE;
+		for (var i = 0; i < 9; i++)
+		{
+				tacos.create(worldLength*Math.random(), (screen.height-100)*Math.random(), 'taco');
+		}
 
     lovebeams = game.add.group();
     lovebeams.enableBody = true;
@@ -68,6 +79,7 @@ function create () {
 
     ghostkat = game.add.sprite(100, 300, 'ghostkat');
     ghostkat.anchor.x = 0.5;
+		game.physics.enable(ghostkat, Phaser.Physics.ARCADE);
 
     game.camera.follow(ghostkat, Phaser.Camera.FOLLOW_LOCKON, 0.1);
 
@@ -80,7 +92,7 @@ function create () {
        //  And then populate it via setTo, using any combination of values as above
        var points = [];
        points.push(new Phaser.Point(0, screen.height));
-       var nextHeight= screen.height-100;
+       var nextHeight= screen.height-200;
        for (i = 0; i < worldLength/10; i++) {
           points.push(new Phaser.Point(i*10,nextHeight));
           nextHeight += Math.random()*10-5;
@@ -92,6 +104,10 @@ function create () {
        graphics.beginFill(0x9b0000);
        graphics.drawPolygon(redRocks.points);
        graphics.endFill();
+}
+function eatTaco (ghostkat, taco) {
+		taco.kill();
+		score += 420;
 }
 
 function update () {
@@ -125,15 +141,9 @@ function update () {
 
 
     prevCamX = game.camera.x;
-    game.physics.arcade.overlap(lovebeams, spheres, collisionHandler, null, this);
+    game.physics.arcade.overlap(tacos, ghostkat, eatTaco, null, this);
 }
 
-function collisionHandler (lovebeam, sphere) {
-
-    //  When a bullet hits an alien we kill them both
-    lovebeam.kill();
-
-}
 
 //  To avoid them being allowed to fire too fast we set a time limit
 function fireLoveBeam(){
